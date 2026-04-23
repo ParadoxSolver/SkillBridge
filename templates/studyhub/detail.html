@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}{{ resource.title }} — Study Hub{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <a href="{% url 'studyhub:list' %}" class="text-sm text-gray-400 hover:text-dark mb-4 inline-block">← Study Hub</a>
+
+  <div class="bg-white border-[3px] border-dark shadow-neo-lg rounded-2xl p-8 mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-xs font-bold bg-yellow-100 border-[2px] border-dark px-2 py-0.5 rounded-full">{{ resource.get_category_display }}</span>
+      {% if resource.is_verified %}
+      <span class="text-xs font-bold bg-green-100 border-[2px] border-green-600 text-green-800 px-2 py-0.5 rounded-full">✓ Peer Verified</span>
+      {% endif %}
+    </div>
+
+    <h1 class="text-3xl font-black mb-3">{{ resource.title }}</h1>
+
+    <div class="flex items-center gap-4 mb-6 text-sm text-gray-500">
+      <span>📘 {{ resource.subject }}</span>
+      {% if resource.course %}<span>🎓 {{ resource.course }}</span>{% endif %}
+      {% if resource.institution %}<span>🏫 {{ resource.institution }}</span>{% endif %}
+    </div>
+
+    {% if resource.description %}
+    <p class="text-gray-700 mb-6 leading-relaxed">{{ resource.description }}</p>
+    {% endif %}
+
+    <!-- Stats & Actions -->
+    <div class="flex flex-wrap items-center gap-4">
+      {% if user.is_authenticated %}
+      <a href="{% url 'studyhub:download' resource.pk %}" class="neo-btn inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md">
+        📥 Download
+      </a>
+      <a href="{% url 'studyhub:vote' resource.pk 'up' %}" class="neo-btn inline-flex items-center gap-2 {% if user_vote and user_vote.vote_type == 'up' %}bg-green-500 text-white{% else %}bg-white text-dark{% endif %} font-bold px-4 py-3 border-[3px] border-dark shadow-neo-sm rounded-md text-sm">
+        👍 {{ resource.upvotes }}
+      </a>
+      <a href="{% url 'studyhub:vote' resource.pk 'down' %}" class="neo-btn inline-flex items-center gap-2 {% if user_vote and user_vote.vote_type == 'down' %}bg-red-500 text-white{% else %}bg-white text-dark{% endif %} font-bold px-4 py-3 border-[3px] border-dark shadow-neo-sm rounded-md text-sm">
+        👎 {{ resource.downvotes }}
+      </a>
+      {% endif %}
+      <span class="text-sm text-gray-400">📥 {{ resource.download_count }} downloads</span>
+    </div>
+  </div>
+
+  <!-- Uploader -->
+  <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-5 flex items-center gap-4">
+    <div class="w-10 h-10 bg-secondary border-[2px] border-dark rounded-full flex items-center justify-center text-sm font-bold">{{ resource.uploader.username.0|upper }}</div>
+    <div>
+      <a href="{% url 'accounts:profile' resource.uploader.username %}" class="font-bold hover:underline">{{ resource.uploader.username }}</a>
+      <p class="text-xs text-gray-400">Uploaded {{ resource.created_at|date:"M d, Y" }}</p>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

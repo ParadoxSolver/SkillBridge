@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Marketplace — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-4xl font-black">Marketplace</h1>
+      <p class="text-gray-500 mt-1">Find skilled students for your next project</p>
+    </div>
+    {% if user.is_authenticated %}
+    <a href="{% url 'marketplace:create' %}" class="neo-btn inline-flex items-center gap-2 bg-primary text-white font-bold text-sm px-5 py-2.5 border-[3px] border-dark shadow-neo rounded-md">
+      + List Your Service
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-5 mb-8">
+    <form method="get" class="flex flex-col sm:flex-row gap-4">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search services..." class="flex-1 px-4 py-3 border-[3px] border-dark rounded-md font-poppins focus:outline-none focus:ring-2 focus:ring-primary" />
+      <select name="category" class="px-4 py-3 border-[3px] border-dark rounded-md font-poppins bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+        <option value="">All Categories</option>
+        {% for val, label in categories %}
+        <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <select name="sort" class="px-4 py-3 border-[3px] border-dark rounded-md font-poppins bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+        <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low → High</option>
+        <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High → Low</option>
+        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Top Rated</option>
+      </select>
+      <button type="submit" class="neo-btn bg-dark text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md">Search</button>
+    </form>
+  </div>
+
+  <!-- Listings Grid -->
+  {% if listings %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for listing in listings %}
+    <a href="{{ listing.get_absolute_url }}" class="neo-card bg-white border-[3px] border-dark shadow-neo rounded-xl overflow-hidden block">
+      {% if listing.image %}
+      <img src="{{ listing.image.url }}" alt="{{ listing.title }}" class="w-full h-40 object-cover border-b-[3px] border-dark" />
+      {% else %}
+      <div class="w-full h-40 bg-beige border-b-[3px] border-dark flex items-center justify-center">
+        <span class="text-4xl">{{ listing.get_category_display|truncatechars:2 }}</span>
+      </div>
+      {% endif %}
+      <div class="p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-bold bg-blue-100 border-[2px] border-dark px-2 py-0.5 rounded-full">{{ listing.get_category_display }}</span>
+          <span class="text-xs text-gray-400">{{ listing.delivery_days }} day{{ listing.delivery_days|pluralize }}</span>
+        </div>
+        <h3 class="font-bold text-lg mb-2 line-clamp-2">{{ listing.title }}</h3>
+        <p class="text-sm text-gray-500 mb-3 line-clamp-2">{{ listing.description|truncatewords:20 }}</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 bg-primary border-[2px] border-dark rounded-full flex items-center justify-center text-xs font-bold text-white">{{ listing.seller.username.0|upper }}</div>
+            <span class="text-xs font-semibold">{{ listing.seller.username }}</span>
+          </div>
+          <span class="text-lg font-black text-primary">₹{{ listing.price }}</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-12 text-center">
+    <p class="text-5xl mb-4">🔍</p>
+    <h3 class="text-xl font-bold mb-2">No listings found</h3>
+    <p class="text-gray-500 mb-6">Be the first to list your service!</p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'marketplace:create' %}" class="neo-btn inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md">Create a Listing</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

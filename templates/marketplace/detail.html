@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}{{ listing.title }} — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Content -->
+    <div class="lg:col-span-2">
+      <div class="flex items-center gap-2 mb-4">
+        <a href="{% url 'marketplace:list' %}" class="text-sm text-gray-400 hover:text-dark">← Marketplace</a>
+        <span class="text-gray-300">/</span>
+        <span class="text-xs font-bold bg-blue-100 border-[2px] border-dark px-2 py-0.5 rounded-full">{{ listing.get_category_display }}</span>
+      </div>
+
+      <h1 class="text-3xl font-black mb-4">{{ listing.title }}</h1>
+
+      <!-- Seller Info -->
+      <div class="flex items-center gap-3 mb-6">
+        <a href="{% url 'accounts:profile' listing.seller.username %}" class="flex items-center gap-2 hover:underline">
+          <div class="w-9 h-9 bg-primary border-[2px] border-dark rounded-full flex items-center justify-center text-sm font-bold text-white">{{ listing.seller.username.0|upper }}</div>
+          <span class="font-bold text-sm">{{ listing.seller.username }}</span>
+        </a>
+        {% if listing.seller.is_verified %}
+        <span class="text-green-600 text-xs font-bold">✓ Verified</span>
+        {% endif %}
+        <span class="text-xs text-gray-400">⭐ {{ listing.seller.trust_score }}</span>
+      </div>
+
+      <!-- Description -->
+      <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-6 mb-6">
+        <h3 class="font-bold text-sm uppercase tracking-wider text-gray-400 mb-3">Description</h3>
+        <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ listing.description }}</p>
+      </div>
+
+      <!-- Tags -->
+      {% if listing.tags_list %}
+      <div class="flex flex-wrap gap-2 mb-6">
+        {% for tag in listing.tags_list %}
+        <span class="bg-gray-100 border-[2px] border-dark text-xs font-bold px-3 py-1 rounded-full">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Reviews -->
+      {% if reviews %}
+      <h3 class="text-xl font-black mb-4">Reviews ({{ reviews|length }})</h3>
+      <div class="space-y-4">
+        {% for review in reviews %}
+        <div class="bg-white border-[3px] border-dark shadow-neo-sm rounded-xl p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="font-bold text-sm">{{ review.reviewer.username }}</span>
+            <span class="text-secondary text-sm">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+            <span class="text-xs text-gray-400 ml-auto">{{ review.created_at|date:"M d, Y" }}</span>
+          </div>
+          <p class="text-gray-600 text-sm">{{ review.comment }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar: Order Card -->
+    <div>
+      <div class="bg-white border-[3px] border-dark shadow-neo-lg rounded-xl p-6 sticky top-24">
+        <p class="text-3xl font-black text-primary mb-2">₹{{ listing.price }}</p>
+        <p class="text-sm text-gray-500 mb-6">📦 {{ listing.delivery_days }} day{{ listing.delivery_days|pluralize }} delivery</p>
+
+        {% if user.is_authenticated and user != listing.seller %}
+        <form method="post" action="{% url 'marketplace:order_create' listing.pk %}">
+          {% csrf_token %}
+          <div class="mb-4">
+            {{ order_form.requirements }}
+          </div>
+          <button type="submit" class="neo-btn bg-primary text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md text-base w-full">
+            Order Now — ₹{{ listing.price }}
+          </button>
+        </form>
+        <p class="text-xs text-gray-400 text-center mt-3">🔒 Payment held in escrow until delivery</p>
+        {% elif user == listing.seller %}
+        <div class="flex gap-2">
+          <a href="{% url 'marketplace:edit' listing.pk %}" class="neo-btn flex-1 text-center bg-secondary text-dark font-bold px-4 py-3 border-[3px] border-dark shadow-neo rounded-md text-sm">Edit</a>
+          <a href="{% url 'marketplace:delete' listing.pk %}" class="neo-btn flex-1 text-center bg-red-500 text-white font-bold px-4 py-3 border-[3px] border-dark shadow-neo rounded-md text-sm">Delete</a>
+        </div>
+        {% else %}
+        <a href="{% url 'account_login' %}" class="neo-btn bg-primary text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md text-base w-full block text-center">Sign in to Order</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

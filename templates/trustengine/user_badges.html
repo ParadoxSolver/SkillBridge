@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }}'s Badges — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h1 class="text-3xl font-black mb-2">{{ profile_user.username }}'s Badges</h1>
+  <p class="text-gray-500 mb-8">Verified credentials with cryptographic proof</p>
+
+  {% if badges %}
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    {% for ub in badges %}
+    <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-6 text-center">
+      <p class="text-4xl mb-2">{{ ub.badge.icon }}</p>
+      <p class="font-bold text-sm">{{ ub.badge.name }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ ub.awarded_at|date:"M d, Y" }}</p>
+      {% if ub.proof_hash %}
+      <p class="text-[10px] font-mono text-gray-300 mt-2 break-all">🔐 {{ ub.proof_hash|truncatechars:24 }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-12 text-center">
+    <p class="text-5xl mb-4">🏅</p>
+    <p class="text-gray-500">No badges earned yet.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

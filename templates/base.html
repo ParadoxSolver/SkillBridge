@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}SkillBridge — Learn. Earn. Grow.{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}SkillBridge is a student-centric digital ecosystem bridging the Education-Employability Gap. Learn a skill, monetize it, and build a verified portfolio.{% endblock %}" />
+
+  <!-- Google Font: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { poppins: ['Poppins', 'sans-serif'] },
+          colors: {
+            primary: '#2563eb',
+            secondary: '#fbbf24',
+            dark: '#000000',
+            light: '#ffffff',
+            beige: '#f4f0e6',
+          },
+          boxShadow: {
+            neo: '4px 4px 0px 0px #000',
+            'neo-lg': '6px 6px 0px 0px #000',
+            'neo-xl': '8px 8px 0px 0px #000',
+            'neo-sm': '2px 2px 0px 0px #000',
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body class="font-poppins text-dark">
+
+  <!-- NAVIGATION BAR (Sticky) -->
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-[3px] border-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="{% url 'core:landing' %}" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 bg-primary border-[3px] border-dark shadow-neo-sm rounded-md flex items-center justify-center group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_#000] transition-all duration-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 3h4v4" />
+          </svg>
+        </div>
+        <span class="text-xl font-extrabold tracking-tight">Skill<span class="text-primary">Bridge</span></span>
+      </a>
+
+      <!-- Center Links -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="{% url 'marketplace:list' %}" class="nav-link font-semibold text-sm uppercase tracking-wider">Marketplace</a>
+        <a href="{% url 'studyhub:list' %}" class="nav-link font-semibold text-sm uppercase tracking-wider">Study Hub</a>
+        <a href="{% url 'trustengine:badges' %}" class="nav-link font-semibold text-sm uppercase tracking-wider">Badges</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'accounts:dashboard' %}" class="nav-link font-semibold text-sm uppercase tracking-wider">Dashboard</a>
+        {% endif %}
+      </div>
+
+      <!-- CTA -->
+      {% if user.is_authenticated %}
+        <div class="hidden sm:flex items-center gap-3">
+          <a href="{% url 'accounts:profile' user.username %}" class="neo-btn inline-flex items-center gap-2 bg-white text-dark font-bold text-sm px-4 py-2 border-[3px] border-dark shadow-neo-sm rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0" /></svg>
+            {{ user.username }}
+          </a>
+          <a href="{% url 'account_logout' %}" class="neo-btn inline-flex items-center gap-2 bg-red-500 text-white font-bold text-sm px-4 py-2 border-[3px] border-dark shadow-neo-sm rounded-md">
+            Logout
+          </a>
+        </div>
+      {% else %}
+        <a href="{% url 'account_login' %}" class="neo-btn hidden sm:inline-flex items-center gap-2 bg-primary text-white font-bold text-sm px-5 py-2.5 border-[3px] border-dark shadow-neo rounded-md">
+          Sign in
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+    {% for message in messages %}
+    <div class="bg-{% if message.tags == 'success' %}green-100 border-green-600 text-green-800{% elif message.tags == 'error' %}red-100 border-red-600 text-red-800{% elif message.tags == 'warning' %}yellow-100 border-yellow-600 text-yellow-800{% else %}blue-100 border-blue-600 text-blue-800{% endif %} border-[3px] shadow-neo-sm rounded-md px-5 py-3 mb-3 font-semibold text-sm flex items-center justify-between">
+      <span>{{ message }}</span>
+      <button onclick="this.parentElement.remove()" class="font-bold text-lg leading-none">&times;</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Page Content -->
+  {% block content %}{% endblock %}
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white border-t-[3px] border-dark mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Brand -->
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-primary border-[3px] border-white shadow-neo-sm rounded-md flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 3h4v4" />
+              </svg>
+            </div>
+            <span class="text-xl font-extrabold">Skill<span class="text-primary">Bridge</span></span>
+          </div>
+          <p class="text-gray-400 text-sm">Built with 💜 by students, for students.</p>
+        </div>
+        <!-- Platform -->
+        <div>
+          <h4 class="font-bold text-sm uppercase tracking-wider mb-4 text-secondary">Platform</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="{% url 'marketplace:list' %}" class="hover:text-white transition-colors">Marketplace</a></li>
+            <li><a href="{% url 'studyhub:list' %}" class="hover:text-white transition-colors">Study Hub</a></li>
+            <li><a href="{% url 'trustengine:badges' %}" class="hover:text-white transition-colors">Badges</a></li>
+          </ul>
+        </div>
+        <!-- Account -->
+        <div>
+          <h4 class="font-bold text-sm uppercase tracking-wider mb-4 text-secondary">Account</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'accounts:dashboard' %}" class="hover:text-white transition-colors">Dashboard</a></li>
+            <li><a href="{% url 'escrow:wallet' %}" class="hover:text-white transition-colors">Wallet</a></li>
+            <li><a href="{% url 'accounts:profile_edit' %}" class="hover:text-white transition-colors">Settings</a></li>
+            {% else %}
+            <li><a href="{% url 'account_login' %}" class="hover:text-white transition-colors">Sign In</a></li>
+            <li><a href="{% url 'account_signup' %}" class="hover:text-white transition-colors">Sign Up</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <!-- Connect -->
+        <div>
+          <h4 class="font-bold text-sm uppercase tracking-wider mb-4 text-secondary">Connect</h4>
+          <p class="text-sm text-gray-400">Learn. Earn. Grow.</p>
+          <p class="text-sm text-gray-500 mt-2">© 2024 SkillBridge. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

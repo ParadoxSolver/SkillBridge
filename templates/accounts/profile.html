@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }} — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Profile Header -->
+  <div class="bg-white border-[3px] border-dark shadow-neo-lg rounded-2xl p-8 mb-8">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+      <div class="w-20 h-20 bg-primary border-[3px] border-dark rounded-full flex items-center justify-center text-3xl font-black text-white flex-shrink-0">
+        {{ profile_user.username.0|upper }}
+      </div>
+      <div class="flex-1">
+        <div class="flex items-center gap-3 mb-1">
+          <h1 class="text-2xl font-black">{{ profile_user.username }}</h1>
+          {% if profile_user.is_verified %}
+          <span class="inline-flex items-center gap-1 bg-green-100 border-[2px] border-green-600 text-green-800 text-xs font-bold px-2 py-0.5 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+            Verified
+          </span>
+          {% endif %}
+        </div>
+        {% if profile_user.college_name %}
+        <p class="text-gray-500 text-sm">🎓 {{ profile_user.college_name }}</p>
+        {% endif %}
+        {% if profile_user.bio %}
+        <p class="text-gray-600 mt-2">{{ profile_user.bio }}</p>
+        {% endif %}
+        {% if profile_user.skills_list %}
+        <div class="flex flex-wrap gap-2 mt-3">
+          {% for skill in profile_user.skills_list %}
+          <span class="bg-blue-50 border-[2px] border-dark text-xs font-bold px-3 py-1 rounded-full">{{ skill }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="flex gap-3 text-center">
+        <div class="neo-card bg-white border-[2px] border-dark shadow-neo-sm rounded-md px-4 py-3">
+          <p class="text-xl font-black text-primary">{{ profile_user.trust_score }}</p>
+          <p class="text-[10px] font-bold uppercase text-gray-500">Trust</p>
+        </div>
+        <div class="neo-card bg-white border-[2px] border-dark shadow-neo-sm rounded-md px-4 py-3">
+          <p class="text-xl font-black text-green-600">₹{{ profile_user.total_earnings }}</p>
+          <p class="text-[10px] font-bold uppercase text-gray-500">Earned</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Listings -->
+  {% if listings %}
+  <h2 class="text-xl font-black mb-4">Services</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+    {% for listing in listings %}
+    <a href="{{ listing.get_absolute_url }}" class="neo-card bg-white border-[3px] border-dark shadow-neo rounded-xl p-5 block">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs font-bold bg-blue-100 border-[2px] border-dark px-2 py-0.5 rounded-full">{{ listing.get_category_display }}</span>
+        <span class="text-xs text-gray-400">{{ listing.delivery_days }} day{{ listing.delivery_days|pluralize }}</span>
+      </div>
+      <p class="font-bold text-lg">{{ listing.title }}</p>
+      <p class="text-2xl font-black text-primary mt-2">₹{{ listing.price }}</p>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Badges -->
+  {% if badges %}
+  <h2 class="text-xl font-black mb-4">Badges</h2>
+  <div class="flex flex-wrap gap-3 mb-10">
+    {% for ub in badges %}
+    <div class="bg-white border-[3px] border-dark shadow-neo-sm rounded-lg px-4 py-3 text-center">
+      <p class="text-2xl">{{ ub.badge.icon }}</p>
+      <p class="text-xs font-bold mt-1">{{ ub.badge.name }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Reviews -->
+  {% if reviews_received %}
+  <h2 class="text-xl font-black mb-4">Reviews</h2>
+  <div class="space-y-4">
+    {% for review in reviews_received %}
+    <div class="bg-white border-[3px] border-dark shadow-neo-sm rounded-xl p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="font-bold text-sm">{{ review.reviewer.username }}</span>
+        <span class="text-secondary text-sm">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+      </div>
+      <p class="text-gray-600 text-sm">{{ review.comment }}</p>
+      <p class="text-xs text-gray-400 mt-2">{{ review.created_at|date:"M d, Y" }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

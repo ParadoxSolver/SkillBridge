@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Study Hub — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-4xl font-black">Study Hub</h1>
+      <p class="text-gray-500 mt-1">Community-powered academic resources</p>
+    </div>
+    {% if user.is_authenticated %}
+    <a href="{% url 'studyhub:upload' %}" class="neo-btn inline-flex items-center gap-2 bg-secondary text-dark font-bold text-sm px-5 py-2.5 border-[3px] border-dark shadow-neo rounded-md">
+      + Upload Resource
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-5 mb-8">
+    <form method="get" class="flex flex-col sm:flex-row gap-4">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search resources..." class="flex-1 px-4 py-3 border-[3px] border-dark rounded-md font-poppins focus:outline-none focus:ring-2 focus:ring-primary" />
+      <select name="category" class="px-4 py-3 border-[3px] border-dark rounded-md font-poppins bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+        <option value="">All Types</option>
+        {% for val, label in categories %}
+        <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <select name="sort" class="px-4 py-3 border-[3px] border-dark rounded-md font-poppins bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+        <option value="popular" {% if sort == 'popular' %}selected{% endif %}>Most Downloaded</option>
+        <option value="votes" {% if sort == 'votes' %}selected{% endif %}>Most Upvoted</option>
+        <option value="verified" {% if sort == 'verified' %}selected{% endif %}>Verified Only</option>
+      </select>
+      <button type="submit" class="neo-btn bg-dark text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md">Search</button>
+    </form>
+  </div>
+
+  <!-- Resources -->
+  {% if resources %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for resource in resources %}
+    <a href="{{ resource.get_absolute_url }}" class="neo-card bg-white border-[3px] border-dark shadow-neo rounded-xl p-5 block">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xs font-bold bg-yellow-100 border-[2px] border-dark px-2 py-0.5 rounded-full">{{ resource.get_category_display }}</span>
+        {% if resource.is_verified %}
+        <span class="text-xs font-bold bg-green-100 border-[2px] border-green-600 text-green-800 px-2 py-0.5 rounded-full">✓ Verified</span>
+        {% endif %}
+      </div>
+      <h3 class="font-bold text-lg mb-1 line-clamp-2">{{ resource.title }}</h3>
+      <p class="text-sm text-gray-500 mb-3">{{ resource.subject }}</p>
+      <div class="flex items-center justify-between text-xs text-gray-400">
+        <span>👤 {{ resource.uploader.username }}</span>
+        <div class="flex items-center gap-3">
+          <span>👍 {{ resource.upvotes }}</span>
+          <span>📥 {{ resource.download_count }}</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-12 text-center">
+    <p class="text-5xl mb-4">📚</p>
+    <h3 class="text-xl font-bold mb-2">No resources found</h3>
+    <p class="text-gray-500 mb-6">Be the first to share your notes!</p>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

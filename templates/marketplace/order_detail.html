@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Order #{{ order.pk }} — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- Header -->
+  <div class="flex items-center gap-4 mb-8">
+    <h1 class="text-3xl font-black">Order #{{ order.pk }}</h1>
+    <span class="status-{{ order.status }} text-xs font-bold uppercase px-3 py-1 rounded-full border-[2px] border-dark">{{ order.get_status_display }}</span>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Listing Info -->
+      <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-6">
+        <h3 class="font-bold text-sm uppercase tracking-wider text-gray-400 mb-3">Service</h3>
+        <a href="{{ order.listing.get_absolute_url }}" class="text-lg font-bold text-primary hover:underline">{{ order.listing.title }}</a>
+        <p class="text-sm text-gray-500 mt-1">{{ order.listing.get_category_display }}</p>
+      </div>
+
+      <!-- Requirements -->
+      {% if order.requirements %}
+      <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-6">
+        <h3 class="font-bold text-sm uppercase tracking-wider text-gray-400 mb-3">Requirements</h3>
+        <p class="text-gray-700 whitespace-pre-wrap">{{ order.requirements }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Actions -->
+      <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-6">
+        <h3 class="font-bold text-sm uppercase tracking-wider text-gray-400 mb-4">Actions</h3>
+
+        {% if user == order.seller and order.status in 'pending,in_progress' %}
+        <form method="post" action="{% url 'marketplace:order_deliver' order.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="neo-btn bg-green-500 text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md w-full">✅ Mark as Delivered</button>
+        </form>
+        {% endif %}
+
+        {% if user == order.buyer and order.status == 'delivered' %}
+        <form method="post" action="{% url 'marketplace:order_accept' order.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="neo-btn bg-green-500 text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md w-full mb-3">✅ Accept & Release Payment</button>
+        </form>
+        {% endif %}
+
+        {% if user == order.buyer and order.status == 'pending' %}
+        <form method="post" action="{% url 'marketplace:order_cancel' order.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="neo-btn bg-red-500 text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md w-full">Cancel Order</button>
+        </form>
+        {% endif %}
+
+        {% if order.status == 'completed' and user == order.buyer and not has_review %}
+        <h4 class="font-bold mt-6 mb-3">Leave a Review</h4>
+        <form method="post" action="{% url 'marketplace:review_create' order.pk %}" class="space-y-4">
+          {% csrf_token %}
+          {{ review_form.rating }}
+          {{ review_form.comment }}
+          <button type="submit" class="neo-btn bg-secondary text-dark font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md w-full">Submit Review ⭐</button>
+        </form>
+        {% endif %}
+
+        {% if order.status == 'completed' and has_review %}
+        <p class="text-green-600 font-bold text-center">✅ Review submitted</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="bg-white border-[3px] border-dark shadow-neo-lg rounded-xl p-6 sticky top-24 space-y-4">
+        <div>
+          <p class="text-xs font-bold uppercase text-gray-400">Total</p>
+          <p class="text-2xl font-black text-primary">₹{{ order.total_price }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase text-gray-400">Buyer</p>
+          <a href="{% url 'accounts:profile' order.buyer.username %}" class="font-bold text-sm hover:underline">{{ order.buyer.username }}</a>
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase text-gray-400">Seller</p>
+          <a href="{% url 'accounts:profile' order.seller.username %}" class="font-bold text-sm hover:underline">{{ order.seller.username }}</a>
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase text-gray-400">Created</p>
+          <p class="text-sm">{{ order.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        {% if escrow %}
+        <div class="border-t-[3px] border-dark pt-4">
+          <p class="text-xs font-bold uppercase text-gray-400">Escrow</p>
+          <span class="escrow-{{ escrow.status }} text-xs font-bold uppercase px-3 py-1 rounded-full border-[2px] border-dark inline-block mt-1">{{ escrow.get_status_display }}</span>
+          <p class="text-xs text-gray-400 mt-2">Commission: ₹{{ escrow.commission_amount }}</p>
+          <p class="text-xs text-gray-400">Seller receives: ₹{{ escrow.net_amount }}</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

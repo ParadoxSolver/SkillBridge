@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h1 class="text-3xl font-black mb-8">Edit Profile</h1>
+
+  <form method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+
+    {% for field in form %}
+    <div>
+      <label class="block text-sm font-bold uppercase tracking-wider mb-2" for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}
+      <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
+      {% endif %}
+      {% for error in field.errors %}
+      <p class="text-xs text-red-500 mt-1">{{ error }}</p>
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="neo-btn bg-primary text-white font-bold px-8 py-3 border-[3px] border-dark shadow-neo rounded-md text-base w-full">
+      Save Changes
+    </button>
+  </form>
+</section>
+{% endblock %}

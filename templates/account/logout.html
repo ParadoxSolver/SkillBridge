@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Signed Out — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+  <div class="bg-white border-[3px] border-dark shadow-neo-lg rounded-2xl p-8">
+    <p class="text-5xl mb-4">👋</p>
+    <h1 class="text-2xl font-black mb-2">You've been signed out</h1>
+    <p class="text-gray-500 mb-6">See you next time!</p>
+    <a href="{% url 'core:landing' %}" class="neo-btn inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 border-[3px] border-dark shadow-neo rounded-md">
+      Back to Home
+    </a>
+  </div>
+</section>
+{% endblock %}

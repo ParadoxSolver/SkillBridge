@@ -1,0 +1,119 @@
+/* SkillBridge — Shared Styles (Neo-Brutalist Design System) */
+
+/* Grid background pattern */
+body {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 20s linear infinite;
+}
+.ticker-section:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Floating shapes animations */
+@keyframes floatA {
+  0%, 100% { transform: translateY(0) rotate(-12deg); }
+  50%      { transform: translateY(-18px) rotate(-12deg); }
+}
+@keyframes floatB {
+  0%, 100% { transform: translateY(0) rotate(6deg); }
+  50%      { transform: translateY(-14px) rotate(6deg); }
+}
+@keyframes floatC {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-20px); }
+}
+@keyframes floatD {
+  0%, 100% { transform: translateY(0) rotate(3deg); }
+  50%      { transform: translateY(-12px) rotate(3deg); }
+}
+.float-a { animation: floatA 4s ease-in-out infinite; }
+.float-b { animation: floatB 5s ease-in-out infinite 0.5s; }
+.float-c { animation: floatC 3.5s ease-in-out infinite 1s; }
+.float-d { animation: floatD 4.5s ease-in-out infinite 0.3s; }
+
+/* Neo-brutal button press */
+.neo-btn {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.neo-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000 !important;
+}
+.neo-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px 0px #000 !important;
+}
+
+/* Card hover */
+.neo-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.neo-card:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000 !important;
+}
+
+/* Feature icon card hover */
+.icon-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.icon-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 6px 10px 0px 0px #000 !important;
+}
+.icon-card:hover .icon-inner {
+  transform: scale(1.12);
+}
+.icon-inner {
+  transition: transform 0.2s ease;
+}
+
+/* Nav link underline */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: #000;
+  transition: width 0.25s ease;
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Override grid bg for feature-intro */
+.no-grid-bg {
+  background-image: none !important;
+  background-color: #fff;
+}
+
+/* Status badges */
+.status-pending { background-color: #fef3c7; color: #92400e; }
+.status-in_progress { background-color: #dbeafe; color: #1e40af; }
+.status-delivered { background-color: #e0e7ff; color: #3730a3; }
+.status-completed { background-color: #d1fae5; color: #065f46; }
+.status-disputed { background-color: #fee2e2; color: #991b1b; }
+.status-cancelled { background-color: #f3f4f6; color: #374151; }
+
+/* Escrow status badges */
+.escrow-held { background-color: #fef3c7; color: #92400e; }
+.escrow-released { background-color: #d1fae5; color: #065f46; }
+.escrow-refunded { background-color: #dbeafe; color: #1e40af; }
+.escrow-disputed { background-color: #fee2e2; color: #991b1b; }

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Wallet — SkillBridge{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <h1 class="text-4xl font-black mb-8">Wallet 💰</h1>
+
+  <!-- Balance Card -->
+  <div class="bg-white border-[3px] border-dark shadow-neo-lg rounded-2xl p-8 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+      <div>
+        <p class="text-xs font-bold uppercase text-gray-400 mb-1">Balance</p>
+        <p class="text-3xl font-black text-primary">₹{{ wallet.balance }}</p>
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase text-gray-400 mb-1">Total Earned</p>
+        <p class="text-3xl font-black text-green-600">₹{{ wallet.total_earned }}</p>
+      </div>
+      <div>
+        <p class="text-xs font-bold uppercase text-gray-400 mb-1">Total Withdrawn</p>
+        <p class="text-3xl font-black text-gray-500">₹{{ wallet.total_withdrawn }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transactions -->
+  <h2 class="text-xl font-black mb-4">Transaction History</h2>
+
+  {% if transactions %}
+  <div class="space-y-3">
+    {% for tx in transactions %}
+    <div class="bg-white border-[3px] border-dark shadow-neo-sm rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div>
+        <p class="font-bold">{{ tx.order.listing.title }}</p>
+        <p class="text-xs text-gray-400">Order #{{ tx.order.pk }} — {{ tx.created_at|date:"M d, Y H:i" }}</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-lg font-black {% if tx.status == 'released' %}text-green-600{% elif tx.status == 'refunded' %}text-blue-600{% else %}text-yellow-600{% endif %}">₹{{ tx.amount }}</span>
+        <span class="escrow-{{ tx.status }} text-xs font-bold uppercase px-3 py-1 rounded-full border-[2px] border-dark">{{ tx.get_status_display }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white border-[3px] border-dark shadow-neo rounded-xl p-12 text-center">
+    <p class="text-5xl mb-4">💸</p>
+    <p class="text-gray-500">No transactions yet. Start by completing a project!</p>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}
